@@ -2,16 +2,16 @@ from tkinter import *
 import sqlite3
 import bcrypt
 
-# Configuración inicial de la ventana
+# Configuración ventana
 root = Tk()
-root.title("Simple todo list with Login")
+root.title("Todo list")
 root.geometry('500x500')
 
 # Conexión a la base de datos
 conn = sqlite3.connect("todo.db")
 c = conn.cursor()
 
-# Tablas necesarias: usuarios y tareas
+# Tablas
 
 c.execute("""
 CREATE TABLE IF NOT EXISTS users (
@@ -33,18 +33,17 @@ CREATE TABLE IF NOT EXISTS todo (
 """)
 conn.commit()
 
-# Variables globales
 current_user_id = None
 
-# Función para encriptar contraseñas
+# Encriptar contraseñas
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-# Función para verificar contraseñas
+# Verificar contraseñas
 def verify_password(password, hashed):
     return bcrypt.checkpw(password.encode('utf-8'), hashed)
 
-# Función para renderizar tareas
+# Renderizar tareas
 def render_todos():
     global current_user_id
     if current_user_id is None:
@@ -66,7 +65,7 @@ def render_todos():
         btn.grid(row=i, column=1)
         l.select() if completed else l.deselect()
 
-# Función para agregar tareas
+# Agregar tareas
 def addTodo():
     global current_user_id
     if current_user_id is None:
@@ -83,7 +82,7 @@ def addTodo():
     else:
         pass
 
-# Funciones para completar y eliminar tareas
+# Completar y eliminar tareas
 def complete(id):
     def _complete():
         todo = c.execute("SELECT * FROM todo WHERE id = ?", (id,)).fetchone()
@@ -99,7 +98,7 @@ def remove(id):
         render_todos()
     return _remove
 
-# Función para iniciar sesión
+# Iniciar sesión
 def login():
     global current_user_id
     username = username_entry.get()
@@ -114,7 +113,7 @@ def login():
     else:
         login_error_label.config(text="Invalid username or password", fg="red")
 
-# Función para registrarse
+# Registrarse
 def register():
     username = username_entry.get()
     password = password_entry.get()
@@ -130,7 +129,7 @@ def register():
     else:
         login_error_label.config(text="Please fill all fields", fg="red")
 
-# Interfaz de usuario para el login
+# Interfaz login
 login_frame = Frame(root)
 login_frame.pack(fill='both', expand=1)
 
@@ -148,7 +147,7 @@ login_error_label.pack(pady=5)
 Button(login_frame, text="Login", command=login).pack(pady=5)
 Button(login_frame, text="Register", command=register).pack(pady=5)
 
-# Interfaz de usuario para las tareas
+# Interfaz tareas
 todo_frame = Frame(root)
 
 l = Label(todo_frame, text="Task")
